@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Classic 2048</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="game-2024-page">
+  <header class="game-2024-header">
+    <div>
+      <p class="eyebrow">Merge challenge</p>
+      <h1>Classic 2048</h1>
+    </div>
+    <a class="back-link" href="index.html">Back to lobby</a>
+  </header>
+
+  <main class="game-2024-content">
+    <section class="board-panel">
+      <div class="board-grid" id="board-grid"></div>
+    </section>
+
+    <aside class="game-2024-hud">
+      <div class="score-board">
+        <span>Score</span>
+        <strong id="wm-score">0</strong>
+      </div>
+      <div class="controls-panel">
+        <p>Use the arrow keys to slide tiles. Matching fruits merge into the next stage, and every merge adds to your
+          score.</p>
+      </div>
+    </aside>
+  </main>
+
+  <div id="game-2024-overlay" class="overlay hidden">
+    <p id="game-2024-overlay-text"></p>
+    <button id="wm-restart">Play again</button>
+  </div>
+
+  <script src="2024.js" type="module"></script>
+</body>
+
+</html>
