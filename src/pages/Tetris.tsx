@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TetrisEngine } from '../game/TetrisGame';
 import type { TetrisStats, GameState } from '../game/TetrisGame';
+import '../style/Tetris.css';
 
 export default function Tetris() {
     const boardRef = useRef<HTMLCanvasElement>(null);
@@ -13,9 +14,6 @@ export default function Tetris() {
 
     useEffect(() => {
         if (!boardRef.current || !previewRef.current) return;
-
-        // Prevent double init in strict mode
-        if (engineRef.current) return;
 
         const engine = new TetrisEngine(
             boardRef.current,
@@ -41,8 +39,6 @@ export default function Tetris() {
         return () => {
             engine.destroy();
             document.removeEventListener('keydown', handleKey);
-            // We don't nullify engineRef.current here immediately to avoid issues if strict mode re-mounts
-            // but 'destroy' stops the loop.
         };
     }, []);
 
@@ -57,51 +53,57 @@ export default function Tetris() {
             </header>
 
             <main className="app">
-                <section className="playfield">
-                    <canvas ref={boardRef} width={300} height={900} aria-label="Tetris board"></canvas>
+                <section className="sidebar-left">
+                    <div className="stat-card">
+                        <span className="stat-label">Score</span>
+                        <span className="stat-value">{stats.score}</span>
+                    </div>
+                    <div className="stat-card">
+                        <span className="stat-label">Lines</span>
+                        <span className="stat-value">{stats.lines}</span>
+                    </div>
+                    <div className="stat-card">
+                        <span className="stat-label">Level</span>
+                        <span className="stat-value">{stats.level}</span>
+                    </div>
                 </section>
-                <section className="sidebar">
-                    <h1>Tetris</h1>
-                    <div className="stat">
-                        <span className="label">Score</span>
-                        <span className="value">{stats.score}</span>
+
+                <section className="playfield-wrapper">
+                    <div className="playfield">
+                        <canvas ref={boardRef} width={300} height={600} aria-label="Tetris board"></canvas>
                     </div>
-                    <div className="stat">
-                        <span className="label">Lines</span>
-                        <span className="value">{stats.lines}</span>
+
+                    <div className={`overlay ${gameState === 'playing' ? 'hidden' : ''}`}>
+                        <p>{gameState === 'paused' ? 'PAUSED' : 'GAME OVER'}</p>
+                        <button className="game-btn" onClick={() => {
+                            if (gameState === 'paused') engineRef.current?.togglePause();
+                            else engineRef.current?.start();
+                        }}>
+                            {gameState === 'paused' ? 'RESUME GAME' : 'PLAY AGAIN'}
+                        </button>
                     </div>
-                    <div className="stat">
-                        <span className="label">Level</span>
-                        <span className="value">{stats.level}</span>
+                </section>
+
+                <section className="sidebar-right">
+                    <div className="next-piece-card">
+                        <span className="stat-label">Next Piece</span>
+                        <canvas ref={previewRef} width={120} height={100}></canvas>
                     </div>
-                    <div className="preview">
-                        <span className="label">Next</span>
-                        <canvas ref={previewRef} width={120} height={120}></canvas>
-                    </div>
-                    <div className="controls">
+
+                    <div className="controls-card">
                         <h2>Controls</h2>
-                        <ul>
-                            <li>← / →: Move</li>
-                            <li>↑: Rotate</li>
-                            <li>↓: Soft drop</li>
-                            <li>Space: Hard drop</li>
-                            <li>P: Pause / resume</li>
-                            <li>R: Restart</li>
+                        <ul className="controls-list">
+                            <li><span>Move</span> <div><span className="key-badge">←</span> <span className="key-badge">→</span></div></li>
+                            <li><span>Rotate</span> <span className="key-badge">↑</span></li>
+                            <li><span>Soft Drop</span> <span className="key-badge">↓</span></li>
+                            <li><span>Hard Drop</span> <span className="key-badge">Space</span></li>
+                            <li><span>Pause</span> <span className="key-badge">P</span></li>
                         </ul>
                     </div>
-                    <button onClick={() => engineRef.current?.start()}>Restart</button>
+
+                    <button className="game-btn" onClick={() => engineRef.current?.start()}>RESTART GAME</button>
                 </section>
             </main>
-
-            <div className={`overlay ${gameState === 'playing' ? 'hidden' : ''}`}>
-                <p>{gameState === 'paused' ? 'Paused' : 'Game Over'}</p>
-                <button onClick={() => {
-                    if (gameState === 'paused') engineRef.current?.togglePause();
-                    else engineRef.current?.start();
-                }}>
-                    {gameState === 'paused' ? 'Resume' : 'Play Again'}
-                </button>
-            </div>
         </div>
     );
 }

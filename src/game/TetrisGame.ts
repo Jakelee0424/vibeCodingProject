@@ -12,17 +12,38 @@ export type TetrisCallbacks = {
 };
 
 const COLS = 10;
-const ROWS = 30;
+const ROWS = 20;
 const BLOCK_SIZE = 30;
 
 const COLORS: Record<string, string> = {
-    I: "#00f0f0",
-    J: "#0051ff",
-    L: "#ff9000",
-    O: "#ffe000",
-    S: "#00e000",
-    T: "#b000ff",
-    Z: "#ff003c",
+    I: "#00f0f0", // Cyan
+    J: "#0051ff", // Blue
+    L: "#ff9000", // Orange
+    O: "#ffe000", // Yellow
+    S: "#00e000", // Green
+    T: "#b000ff", // Purple
+    Z: "#ff003c", // Red
+};
+
+// Gradient stops for "3D" effect
+const LIGHT_COLORS: Record<string, string> = {
+    I: "#80ffff",
+    J: "#4d85ff",
+    L: "#ffc560",
+    O: "#ffff80",
+    S: "#80ff80",
+    T: "#d980ff",
+    Z: "#ff809d",
+};
+
+const DARK_COLORS: Record<string, string> = {
+    I: "#00b0b0",
+    J: "#003cb0",
+    L: "#b06200",
+    O: "#b09b00",
+    S: "#009900",
+    T: "#7a00b0",
+    Z: "#b00029",
 };
 
 const SHAPES: Record<string, number[][][]> = {
@@ -186,7 +207,7 @@ export class TetrisEngine {
         this.level = 1;
         this.dropInterval = 1000;
         this.dropCounter = 0;
-        this.lastTime = 0;
+        this.lastTime = performance.now();
         this.paused = false;
         this.gameOver = false;
         this.callbacks.onGameStateChange('playing');
@@ -246,8 +267,8 @@ export class TetrisEngine {
         this.paused = !this.paused;
         this.callbacks.onGameStateChange(this.paused ? 'paused' : 'playing');
         if (!this.paused) {
-            this.lastTime = performance.now();
-            this.update();
+            this.lastTime = 0;
+            this.animationFrame = requestAnimationFrame(this.update);
         } else {
             cancelAnimationFrame(this.animationFrame);
         }
@@ -414,7 +435,11 @@ export class TetrisEngine {
     }
 
     private drawBoard() {
-        this.ctx.fillStyle = "#05060b";
+        // Clear with transparency so CSS background shows through (or semi-transparent overlay)
+        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
+        // Optional: faint background for the board area
+        this.ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
         this.drawGrid();
@@ -422,7 +447,8 @@ export class TetrisEngine {
         for (let y = 0; y < ROWS; y++) {
             for (let x = 0; x < COLS; x++) {
                 if (this.board[y][x]) {
-                    this.drawCell(x, y, COLORS[this.board[y][x] as string]);
+                    const type = this.board[y][x] as string;
+                    this.drawCell(x, y, COLORS[type], type);
                 }
             }
         }
@@ -432,7 +458,7 @@ export class TetrisEngine {
         piece.matrix.forEach((row, y) => {
             row.forEach((value, x) => {
                 if (value && y + piece.y >= 0) {
-                    this.drawCell(x + piece.x, y + piece.y, COLORS[piece.type]);
+                    this.drawCell(x + piece.x, y + piece.y, COLORS[piece.type], piece.type);
                 }
             });
         });
@@ -471,14 +497,32 @@ export class TetrisEngine {
         this.ctx.restore();
     }
 
-    private drawCell(x: number, y: number, color: string) {
+    private drawCell(x: number, y: number, color: string, type?: string) {
         const posX = x * BLOCK_SIZE;
         const posY = y * BLOCK_SIZE;
-        this.ctx.fillStyle = color;
+
+        // Simple fallback if type not provided
+        const mainColor = color;
+        const lightColor = type ? LIGHT_COLORS[type] || color : color;
+        const darkColor = type ? DARK_COLORS[type] || color : color;
+
+        // Gradient Fill
+        const gradient = this.ctx.createLinearGradient(posX, posY, posX, posY + BLOCK_SIZE);
+        gradient.addColorStop(0, lightColor);
+        gradient.addColorStop(0.5, mainColor);
+        gradient.addColorStop(1, darkColor);
+
+        this.ctx.fillStyle = gradient;
         this.ctx.fillRect(posX, posY, BLOCK_SIZE, BLOCK_SIZE);
-        this.ctx.strokeStyle = "rgba(5, 6, 11, 0.6)";
+
+        // Inner Bevel / Glow
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+        this.ctx.fillRect(posX + 2, posY + 2, BLOCK_SIZE - 4, BLOCK_SIZE * 0.4);
+
+        // Border
+        this.ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
         this.ctx.lineWidth = 1;
-        this.ctx.strokeRect(posX + 0.5, posY + 0.5, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
+        this.ctx.strokeRect(posX, posY, BLOCK_SIZE, BLOCK_SIZE);
     }
 
     private drawGrid() {
@@ -542,6 +586,9 @@ export class TetrisEngine {
 
     private update = (time = 0) => {
         if (this.paused || this.gameOver) return;
+        if (this.lastTime === 0) {
+            this.lastTime = time;
+        }
         const delta = time - this.lastTime;
         this.lastTime = time;
         this.dropCounter += delta;
