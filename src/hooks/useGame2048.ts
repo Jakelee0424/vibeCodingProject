@@ -3,11 +3,11 @@ import { useState, useCallback, useEffect } from "react";
 const GRID_SIZE = 4;
 const SPAWN_TYPES = 3;
 
-export const FRUITS = [
+export const TILES = [
     "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096",
 ];
 
-export const FRUIT_LABELS = [
+export const TILE_VALUES = [
     "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096",
 ];
 
@@ -34,9 +34,9 @@ export function useGame2048() {
         const newGrid = Array.from({ length: GRID_SIZE }, () =>
             Array(GRID_SIZE).fill(null)
         );
-        // spawn 2 fruits
-        spawnFruit(newGrid);
-        spawnFruit(newGrid);
+        // spawn 2 tiles
+        spawnTile(newGrid);
+        spawnTile(newGrid);
 
         setGrid(newGrid);
         setScore(0);
@@ -44,8 +44,8 @@ export function useGame2048() {
         setInitialized(true);
     }, []);
 
-    // Spawn a fruit in a random empty cell
-    const spawnFruit = (currentGrid: Cell[][]) => {
+    // Spawn a tile in a random empty cell
+    const spawnTile = (currentGrid: Cell[][]) => {
         const empties: { x: number; y: number }[] = [];
         currentGrid.forEach((row, y) => {
             row.forEach((cell, x) => {
@@ -70,7 +70,7 @@ export function useGame2048() {
         // Merge
         for (let i = 0; i < items.length - 1; i++) {
             if (items[i].type === items[i + 1].type) {
-                const newType = Math.min(items[i].type + 1, FRUITS.length - 1);
+                const newType = Math.min(items[i].type + 1, TILES.length - 1);
                 items[i] = { ...items[i], type: newType };
                 currentScore.value += (newType + 1) * 25; // Scoring logic from original
                 items.splice(i + 1, 1);
@@ -132,7 +132,7 @@ export function useGame2048() {
             }
 
             if (moved) {
-                spawnFruit(newGrid);
+                spawnTile(newGrid);
                 setScore(scoreTracker.value);
 
                 // Check game over

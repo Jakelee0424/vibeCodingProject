@@ -89,22 +89,7 @@ body {
   margin: 0;
 }
 
-.fruit-sequence {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  padding: 0;
-  margin: 0.75rem 0 0;
-  font-size: 0.85rem;
-  color: rgba(248, 248, 242, 0.75);
-}
 
-.fruit-sequence li {
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-}
 
 .cta-button {
   padding: 0.85rem 1.4rem;
@@ -164,6 +149,7 @@ body {
 
 .app {
   display: flex;
+  height: 100%;
   gap: 1.5rem;
   padding: 1.25rem;
   background: #111426;
@@ -175,9 +161,10 @@ body {
 }
 
 .playfield {
+  height: 100%;
   background: #05060b;
   padding: 0;
-  border-radius: 0.75rem;
+  /* border-radius: 0.75rem; */
   border: 1px solid #22263e;
   overflow: hidden;
 }
@@ -268,10 +255,11 @@ button:hover:not(:disabled) {
 .board-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(70px, 1fr));
-  gap: 0.65rem;
+  --grid-gap: 0.65rem;
+  gap: var(--grid-gap);
 }
 
-.fruit-tile {
+.game-tile {
   aspect-ratio: 1;
   border-radius: 0.75rem;
   background: rgba(255, 255, 255, 0.04);
@@ -286,42 +274,44 @@ button:hover:not(:disabled) {
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
 
-.fruit-tile span {
+.game-tile span {
   padding: 0.35rem 0.5rem;
   border-radius: 0.4rem;
-  background: rgba(0, 0, 0, 0.4);
+  /* background: rgba(0, 0, 0, 0.4); */
 }
 
-.fruit-2 {
-  background: linear-gradient(145deg, #ff5d72, #ff2b4e);
+.tile-2 {
+  background: linear-gradient(145deg, #eee4da, #ece0c8);
+  color: #776e65;
 }
 
-.fruit-4 {
-  background: linear-gradient(145deg, #f87f5b, #f04545);
+.tile-4 {
+  background: linear-gradient(145deg, #ede0c8, #eccfac);
+  color: #776e65;
 }
 
-.fruit-8 {
-  background: linear-gradient(145deg, #a151ff, #5b39ff);
+.tile-8 {
+  background: linear-gradient(145deg, #f2b179, #f59563);
 }
 
-.fruit-16 {
-  background: linear-gradient(145deg, #ffa645, #ff7a16);
+.tile-16 {
+  background: linear-gradient(145deg, #f59563, #f67c5f);
 }
 
-.fruit-32 {
-  background: linear-gradient(145deg, #7bd26b, #3f9d2a);
+.tile-32 {
+  background: linear-gradient(145deg, #f67c5f, #f65e3b);
 }
 
-.fruit-64 {
-  background: linear-gradient(145deg, #ffbd82, #ff8c4c);
+.tile-64 {
+  background: linear-gradient(145deg, #f65e3b, #edcf72);
 }
 
-.fruit-128 {
-  background: linear-gradient(145deg, #6bdfe4, #32c3cf);
+.tile-128 {
+  background: linear-gradient(145deg, #edcf72, #edcc61);
 }
 
-.fruit-256 {
-  background: linear-gradient(145deg, #47b57a, #1f9166);
+.tile-256 {
+  background: linear-gradient(145deg, #edcc61, #edc850);
 }
 
 .game-2024-hud {
@@ -348,74 +338,7 @@ button:hover:not(:disabled) {
   letter-spacing: 0.05em;
 }
 
-.fruit-ladder {
-  padding: 1rem;
-  border-radius: 0.75rem;
-  background: #101525;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
 
-.fruit-ladder h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-}
-
-.fruit-line {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.fruit-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.6rem;
-  border-radius: 0.75rem;
-  background: #13182a;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  font-size: 0.85rem;
-}
-
-.fruit-chip span {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: currentColor;
-  display: inline-flex;
-}
-
-.chip-cherry {
-  color: #ff5d72;
-}
-
-.chip-strawberry {
-  color: #f87f5b;
-}
-
-.chip-grape {
-  color: #a151ff;
-}
-
-.chip-orange {
-  color: #ffa645;
-}
-
-.chip-apple {
-  color: #7bd26b;
-}
-
-.chip-peach {
-  color: #ffbd82;
-}
-
-.chip-melon {
-  color: #6bdfe4;
-}
-
-.chip-game-2024 {
-  color: #47b57a;
-}
 
 .controls-panel {
   padding: 1rem;

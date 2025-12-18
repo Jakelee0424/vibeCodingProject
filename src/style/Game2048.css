@@ -1,0 +1,242 @@
+/* Game 2048 - Premium Design */
+@import './Tetris.css';
+/* Reuse variables and common styles */
+
+.game-2024-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-2024-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.game-2024-header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    background: linear-gradient(to right, #ff9966 0%, #ff5e62 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(255, 94, 98, 0.3);
+}
+
+.game-2024-content {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+/* Board Styling */
+.board-panel {
+    flex: 0 0 auto;
+    position: relative;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.board-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-template-rows: repeat(4, 100px);
+    gap: 15px;
+    background: #bbada0;
+    /* Fallback */
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px;
+    position: relative;
+    width: fit-content;
+}
+
+/* Empty background cells */
+.grid-cell {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Base Tile Styling */
+.game-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 2.5rem;
+    border-radius: 8px;
+    background: #eee4da;
+    color: #776e65;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 2px 2px rgba(255, 255, 255, 0.2);
+    transition: transform 0.15s ease-in-out, background 0.15s ease;
+    z-index: 10;
+}
+
+.game-tile span {
+    position: relative;
+    z-index: 2;
+}
+
+/* Premium Tile Colors (Neon/Glass Style) */
+.tile-2 {
+    background: linear-gradient(135deg, #e4e4e4 0%, #cdcdcd 100%);
+    color: #555;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.tile-4 {
+    background: linear-gradient(135deg, #a8e6cf 0%, #34d399 100%);
+    color: #064e3b;
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+}
+
+.tile-8 {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+.tile-16 {
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+.tile-32 {
+    background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+}
+
+.tile-64 {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+.tile-128 {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #fff;
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
+    font-size: 2.2rem;
+}
+
+.tile-256 {
+    background: linear-gradient(135deg, #fbbf24 0%, #b45309 100%);
+    color: #fff;
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.7);
+    font-size: 2.2rem;
+}
+
+.tile-512,
+.tile-1024,
+.tile-2048 {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: #fff;
+    box-shadow: 0 0 35px rgba(239, 68, 68, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.2);
+    font-size: 2rem;
+}
+
+/* HUD Styling */
+.game-2024-hud {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 320px;
+}
+
+.hud-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.restart-btn {
+    background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+    margin-top: 1rem;
+}
+
+.restart-btn:hover {
+    box-shadow: 0 8px 25px rgba(255, 94, 98, 0.5);
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 850px) {
+    .game-2024-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .game-2024-hud {
+        max-width: 100%;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hud-group {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .board-grid {
+        grid-template-columns: repeat(4, 70px);
+        grid-template-rows: repeat(4, 70px);
+        gap: 10px;
+    }
+
+    .grid-cell {
+        width: 70px;
+        height: 70px;
+    }
+
+    .game-tile {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 450px) {
+    .game-2024-page {
+        padding: 1rem;
+    }
+
+    .game-2024-header h1 {
+        font-size: 2rem;
+    }
+
+    .board-grid {
+        grid-template-columns: repeat(4, 15vw);
+        grid-template-rows: repeat(4, 15vw);
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .grid-cell {
+        width: 15vw;
+        height: 15vw;
+    }
+
+    .game-tile {
+        font-size: 1.4rem;
+    }
+}

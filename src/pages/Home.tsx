@@ -26,7 +26,7 @@ export default function Home() {
             <h2>Classic 2048</h2>
             <p>Slide the grid, combine identical numbers</p>
           </div>
-          <Link className="cta-button" to="/2048">Play 2024</Link>
+          <Link className="cta-button" to="/2048">Play 2048</Link>
         </article>
       </section>
     </main>
