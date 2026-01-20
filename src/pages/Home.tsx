@@ -16,7 +16,7 @@ export default function Home() {
           <div className="card-copy">
             <p className="tagline">Retro essential</p>
             <h2>Classic Tetris</h2>
-            <p>Stack pieces, clear lines, and let the score climb with every strategic drop.</p>
+            <p className="game-description">Stack pieces, clear lines, and let the score climb with every strategic drop.</p>
           </div>
           <Link className="cta-button" to="/tetris">Play Tetris</Link>
         </article>
@@ -24,9 +24,41 @@ export default function Home() {
           <div className="card-copy">
             <p className="tagline">Merge adventure</p>
             <h2>Classic 2048</h2>
-            <p>Slide the grid, combine identical numbers</p>
+            <p className="game-description">Slide the grid, combine identical numbers</p>
           </div>
           <Link className="cta-button" to="/2048">Play 2048</Link>
+        </article>
+        <article className="game-card">
+          <div className="card-copy">
+            <p className="tagline">Arcade Classic</p>
+            <h2>Brick Breaker</h2>
+            <p className="game-description">Destroy all colors by bouncing the ball and moving the paddle.</p>
+          </div>
+          <Link className="cta-button" to="/brick-breaker">Play Game</Link>
+        </article>
+        <article className="game-card">
+          <div className="card-copy">
+            <p className="tagline">Upcoming</p>
+            <h2>Game 4</h2>
+            <p className="game-description">Description for game 4</p>
+          </div>
+          <Link className="cta-button" to="/">Play 4</Link>
+        </article>
+        <article className="game-card">
+          <div className="card-copy">
+            <p className="tagline">Upcoming</p>
+            <h2>Game 5</h2>
+            <p className="game-description">Description for game 5</p>
+          </div>
+          <Link className="cta-button" to="/">Play 5</Link>
+        </article>
+        <article className="game-card">
+          <div className="card-copy">
+            <p className="tagline">Upcoming</p>
+            <h2>Game 6</h2>
+            <p className="game-description">Description for game 6 (should wrap)</p>
+          </div>
+          <Link className="cta-button" to="/">Play 6</Link>
         </article>
       </section>
     </main>

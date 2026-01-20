@@ -1,9 +1,16 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGame2048, TILES, TILE_VALUES } from '../hooks/useGame2048';
 import '../style/Game2048.css';
 
 export default function Game2048() {
     const { grid, score, gameOver, restart } = useGame2048();
+    const [isStarted, setIsStarted] = useState(false);
+
+    const handleStart = () => {
+        restart();
+        setIsStarted(true);
+    };
 
     return (
         <div className="game-2024-page">
@@ -24,28 +31,31 @@ export default function Game2048() {
                         ))}
 
                         {/* Animated tiles */}
-                        {grid.flatMap((row, y) => row.map((cell, x) => {
+                        {isStarted && grid.flatMap((row, y) => row.map((cell, x) => {
                             if (!cell) return null;
                             return (
                                 <div
                                     key={cell.id}
                                     className={`game-tile tile-${TILES[cell.type] || '2'}`}
                                     style={{
-                                        position: 'absolute',
-                                        left: 0,
-                                        top: 0,
-                                        width: 'calc(25% - 18px)', // (100% - 3*15px gap) / 4
-                                        height: 'calc(25% - 18px)',
-                                        // 15 is the gap px
-                                        transform: `translate(calc(${x} * (100% + 15px) + 15px), calc(${y} * (100% + 15px) + 15px))`,
-                                        zIndex: 10,
-                                    }}
+                                        '--x': x,
+                                        '--y': y,
+                                    } as React.CSSProperties}
                                 >
                                     <span>{TILE_VALUES[cell.type]}</span>
                                 </div>
                             );
                         }))}
                     </div>
+
+                    {(!isStarted || gameOver) && (
+                        <div className="overlay" id="game-2024-overlay">
+                            <p>{gameOver ? 'Game Over' : 'Classic 2048'}</p>
+                            <button className="game-btn" onClick={handleStart}>
+                                {gameOver ? 'Play Again' : 'START GAME'}
+                            </button>
+                        </div>
+                    )}
                 </section>
 
                 <aside className="game-2024-hud">
@@ -62,7 +72,7 @@ export default function Game2048() {
                         </ul>
                     </div>
 
-                    <button className="game-btn restart-btn" onClick={restart}>New Game</button>
+                    <button className="game-btn restart-btn" onClick={handleStart}>{isStarted ? 'New Game' : 'Start'}</button>
 
                     <div className="controls-panel" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '1rem' }}>
                         <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', margin: 0 }}>
@@ -71,11 +81,6 @@ export default function Game2048() {
                     </div>
                 </aside>
             </main>
-
-            <div className={`overlay ${!gameOver ? 'hidden' : ''}`} id="game-2024-overlay">
-                <p>Game Over</p>
-                <button className="game-btn" onClick={restart}>Play Again</button>
-            </div>
         </div>
     );
 }

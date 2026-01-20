@@ -23,7 +23,7 @@ body {
 }
 
 .lobby {
-  width: min(960px, 100%);
+  width: min(1400px, 100%);
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
@@ -55,8 +55,9 @@ body {
 
 .game-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  width: 100%;
 }
 
 .game-card {
@@ -72,13 +73,38 @@ body {
 
 .card-copy h2 {
   margin: 0.35rem 0 0.4rem;
-  font-size: 1.65rem;
+  font-size: 1.4rem;
+  /* Reduced for 5-column space */
+  cursor: help;
+  position: relative;
 }
 
 .card-copy p {
   margin: 0;
   color: rgba(248, 248, 242, 0.8);
   line-height: 1.5;
+
+  /* Hidden by default, shown on h2 hover */
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: #1b1f3a;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 250px;
+  z-index: 100;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  margin-bottom: 10px;
+}
+
+.card-copy h2:hover+p {
+  opacity: 1;
+  visibility: visible;
 }
 
 .tagline {

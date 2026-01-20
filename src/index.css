@@ -23,7 +23,7 @@ body {
 }
 
 .lobby {
-  width: min(960px, 100%);
+  width: min(1400px, 100%);
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
@@ -55,8 +55,9 @@ body {
 
 .game-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  width: 100%;
 }
 
 .game-card {
@@ -70,12 +71,53 @@ body {
   gap: 1rem;
 }
 
-.card-copy h2 {
-  margin: 0.35rem 0 0.4rem;
-  font-size: 1.65rem;
+.card-copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
-.card-copy p {
+.card-copy h2 {
+  margin: 0.35rem 0 0.4rem;
+  font-size: 1.4rem;
+  cursor: help;
+  position: relative;
+  z-index: 10;
+}
+
+.card-copy .game-description {
+  margin: 0;
+  color: #fff;
+  line-height: 1.5;
+  background: #1e2235;
+  padding: 1rem;
+  border-radius: 0.6rem;
+  border: 1px solid #5a6dff;
+  width: 280px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+
+  /* Popup Positioning */
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 15px;
+  z-index: 1000;
+
+  /* Visibility Logic */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.2s ease-out;
+}
+
+.card-copy h2:hover~.game-description {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.card-copy p:not(.game-description) {
   margin: 0;
   color: rgba(248, 248, 242, 0.8);
   line-height: 1.5;

@@ -54,23 +54,24 @@
 }
 
 .board-grid {
+    --tile-size: 100px;
+    --grid-gap: 15px;
+    --grid-padding: 15px;
     display: grid;
-    grid-template-columns: repeat(4, 100px);
-    grid-template-rows: repeat(4, 100px);
-    gap: 15px;
-    background: #bbada0;
-    /* Fallback */
+    grid-template-columns: repeat(4, var(--tile-size));
+    grid-template-rows: repeat(4, var(--tile-size));
+    gap: var(--grid-gap);
     background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
-    padding: 15px;
+    padding: var(--grid-padding);
     position: relative;
     width: fit-content;
 }
 
 /* Empty background cells */
 .grid-cell {
-    width: 100px;
-    height: 100px;
+    width: var(--tile-size);
+    height: var(--tile-size);
     background: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -78,6 +79,11 @@
 
 /* Base Tile Styling */
 .game-tile {
+    position: absolute;
+    width: var(--tile-size);
+    height: var(--tile-size);
+    left: 0;
+    top: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -87,8 +93,36 @@
     background: #eee4da;
     color: #776e65;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 2px 2px rgba(255, 255, 255, 0.2);
-    transition: transform 0.15s ease-in-out, background 0.15s ease;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s ease;
     z-index: 10;
+    transform: translate(calc(var(--x) * (var(--tile-size) + var(--grid-gap)) + var(--grid-padding)),
+            calc(var(--y) * (var(--tile-size) + var(--grid-gap)) + var(--grid-padding)));
+    animation: appear 0.2s ease-out;
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+        transform: translate(calc(var(--x) * (var(--tile-size) + var(--grid-gap)) + var(--grid-padding)), calc(var(--y) * (var(--tile-size) + var(--grid-gap)) + var(--grid-padding))) scale(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(calc(var(--x) * (var(--tile-size) + var(--grid-gap)) + var(--grid-padding)), calc(var(--y) * (var(--tile-size) + var(--grid-gap)) + var(--grid-padding))) scale(1);
+    }
+}
+
+.game-2024-page .overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: rgba(15, 12, 41, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .game-tile span {
@@ -200,14 +234,9 @@
     }
 
     .board-grid {
-        grid-template-columns: repeat(4, 70px);
-        grid-template-rows: repeat(4, 70px);
-        gap: 10px;
-    }
-
-    .grid-cell {
-        width: 70px;
-        height: 70px;
+        --tile-size: 70px;
+        --grid-gap: 10px;
+        --grid-padding: 10px;
     }
 
     .game-tile {
@@ -225,15 +254,9 @@
     }
 
     .board-grid {
-        grid-template-columns: repeat(4, 15vw);
-        grid-template-rows: repeat(4, 15vw);
-        gap: 8px;
-        padding: 10px;
-    }
-
-    .grid-cell {
-        width: 15vw;
-        height: 15vw;
+        --tile-size: 15vw;
+        --grid-gap: 8px;
+        --grid-padding: 10px;
     }
 
     .game-tile {
