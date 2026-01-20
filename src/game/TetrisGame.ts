@@ -242,7 +242,6 @@ export class TetrisEngine {
                 break;
             case "ArrowDown":
                 this.softDrop();
-                this.score += 1;
                 this.updateStats();
                 break;
             case "ArrowUp":
@@ -565,7 +564,6 @@ export class TetrisEngine {
         }
         this.currentPiece.y -= 1;
         this.merge(this.board, this.currentPiece);
-        this.score += 2 * (ROWS - this.currentPiece.y);
         this.clearLines();
         this.spawnPiece();
         this.dropCounter = 0;

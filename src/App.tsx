@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Tetris from './pages/Tetris';
 import Game2048 from './pages/Game2048';
+import BrickBreaker from './pages/BrickBreaker';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/tetris" element={<Tetris />} />
         <Route path="/2048" element={<Game2048 />} />
+        <Route path="/brick-breaker" element={<BrickBreaker />} />
       </Routes>
     </BrowserRouter>
   );

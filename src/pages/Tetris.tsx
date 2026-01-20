@@ -10,7 +10,7 @@ export default function Tetris() {
     const engineRef = useRef<TetrisEngine | null>(null);
 
     const [stats, setStats] = useState<TetrisStats>({ score: 0, lines: 0, level: 1 });
-    const [gameState, setGameState] = useState<GameState>('playing');
+    const [gameState, setGameState] = useState<GameState | 'ready'>('ready');
 
     useEffect(() => {
         if (!boardRef.current || !previewRef.current) return;
@@ -24,23 +24,28 @@ export default function Tetris() {
             }
         );
         engineRef.current = engine;
-        engine.start();
-
-        const handleKey = (e: KeyboardEvent) => {
-            // Prevent default scrolling for game keys only if game is active or paused
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
-                e.preventDefault();
-            }
-            engine.handleInput(e.key);
-        };
-
-        document.addEventListener('keydown', handleKey);
 
         return () => {
             engine.destroy();
-            document.removeEventListener('keydown', handleKey);
         };
-    }, []);
+    }, []); // Init only once
+
+    useEffect(() => {
+        const handleKey = (e: KeyboardEvent) => {
+            if (gameState === 'ready') return;
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                e.preventDefault();
+            }
+            engineRef.current?.handleInput(e.key);
+        };
+
+        document.addEventListener('keydown', handleKey);
+        return () => document.removeEventListener('keydown', handleKey);
+    }, [gameState]); // Key handler depends on state
+
+    const handleStart = () => {
+        engineRef.current?.start();
+    };
 
     return (
         <div className="tetris-page">
@@ -73,15 +78,21 @@ export default function Tetris() {
                         <canvas ref={boardRef} width={300} height={600} aria-label="Tetris board"></canvas>
                     </div>
 
-                    <div className={`overlay ${gameState === 'playing' ? 'hidden' : ''}`}>
-                        <p>{gameState === 'paused' ? 'PAUSED' : 'GAME OVER'}</p>
-                        <button className="game-btn" onClick={() => {
-                            if (gameState === 'paused') engineRef.current?.togglePause();
-                            else engineRef.current?.start();
-                        }}>
-                            {gameState === 'paused' ? 'RESUME GAME' : 'PLAY AGAIN'}
-                        </button>
-                    </div>
+                    {gameState !== 'playing' && (
+                        <div className="overlay">
+                            <p>
+                                {gameState === 'ready' && 'TETRIS'}
+                                {gameState === 'paused' && 'PAUSED'}
+                                {gameState === 'gameover' && 'GAME OVER'}
+                            </p>
+                            <button className="game-btn" onClick={() => {
+                                if (gameState === 'paused') engineRef.current?.togglePause();
+                                else handleStart();
+                            }}>
+                                {gameState === 'ready' ? 'START GAME' : (gameState === 'paused' ? 'RESUME GAME' : 'PLAY AGAIN')}
+                            </button>
+                        </div>
+                    )}
                 </section>
 
                 <section className="sidebar-right">
@@ -101,9 +112,10 @@ export default function Tetris() {
                         </ul>
                     </div>
 
-                    <button className="game-btn" onClick={() => engineRef.current?.start()}>RESTART GAME</button>
+                    <button className="game-btn" onClick={handleStart}>RESTART GAME</button>
                 </section>
             </main>
         </div>
     );
 }
+

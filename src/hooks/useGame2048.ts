@@ -27,7 +27,7 @@ export function useGame2048() {
     const [grid, setGrid] = useState<Cell[][]>([]);
     const [score, setScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
-    const [initialized, setInitialized] = useState(false);
+
 
     // Initialize game
     const initGame = useCallback(() => {
@@ -41,7 +41,6 @@ export function useGame2048() {
         setGrid(newGrid);
         setScore(0);
         setGameOver(false);
-        setInitialized(true);
     }, []);
 
     // Spawn a tile in a random empty cell
@@ -158,10 +157,6 @@ export function useGame2048() {
         }
         return false;
     };
-
-    useEffect(() => {
-        if (!initialized) initGame();
-    }, [initialized, initGame]);
 
     // Key listeners
     useEffect(() => {
