@@ -119,7 +119,7 @@
 }
 
 /* Empty background cells */
-.grid-cell {
+.tile-grid-cell {
     width: var(--tile-size);
     height: var(--tile-size);
     background: rgba(255, 255, 255, 0.05);
@@ -166,13 +166,54 @@
     position: absolute;
     inset: 0;
     z-index: 100;
-    background: rgba(15, 12, 41, 0.85);
+    background: rgba(15, 12, 41, 0.95);
     backdrop-filter: blur(12px);
     border-radius: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 1.5rem;
+}
+
+.status-text {
+    font-size: min(3rem, 8vh);
+    font-weight: 800;
+    margin: 0;
+    text-align: center;
+}
+
+.start-menu-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5vh;
+}
+
+.logo-icon {
+    font-size: min(3.5rem, 8vh);
+    margin-bottom: 0.5vh;
+}
+
+.description {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: min(0.9rem, 1.8vh);
+    margin: 0 0 1.5vh;
+    max-width: 250px;
+    font-weight: normal;
+    line-height: 1.4;
+    text-align: center;
+}
+
+#game-2024-overlay h2 {
+    font-size: min(2.5rem, 6vh);
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(to right, #ff9966 0%, #ff5e62 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
 }
 
 .game-tile span {

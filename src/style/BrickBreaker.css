@@ -101,7 +101,7 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.app {
+.brick-breaker-content {
     display: flex;
     gap: 2.5rem;
     align-items: center;
@@ -161,18 +161,54 @@
 .overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border-radius: 20px;
-    z-index: 10;
+    z-index: 100;
+    gap: 1.5rem;
+    backdrop-filter: blur(4px);
 }
 
-.overlay p {
+.status-text {
     font-size: min(3rem, 8vh);
     font-weight: 800;
-    margin-bottom: 2vh;
+    margin: 0;
     color: #fff;
+    text-align: center;
+}
+
+.start-menu-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5vh;
+}
+
+.logo-icon {
+    font-size: min(3.5rem, 8vh);
+    margin-bottom: 0.5vh;
+}
+
+.description {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: min(0.9rem, 1.8vh);
+    margin: 0 0 1.5vh;
+    max-width: 250px;
+    font-weight: normal;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.overlay h2 {
+    font-size: min(2.5rem, 6vh);
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(to right, #ff4e50, #f9d423);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
 }

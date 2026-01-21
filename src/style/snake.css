@@ -86,7 +86,7 @@
 .grid-cell {
     width: min(2.5vw, 3.8vh);
     height: min(2.5vw, 3.8vh);
-    border: 0.1px solid rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .snake-cell {
@@ -216,9 +216,10 @@
 
 .description {
     color: rgba(255, 255, 255, 0.6);
-    font-size: min(1rem, 2vh);
+    font-size: min(0.9rem, 1.8vh);
     margin-bottom: 2vh;
     max-width: 300px;
+    line-height: 1.4;
 }
 
 .stat-card.mini {
