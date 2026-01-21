@@ -6,20 +6,33 @@ import '../style/Game2048.css';
 export default function Game2048() {
     const { grid, score, gameOver, restart } = useGame2048();
     const [isStarted, setIsStarted] = useState(false);
+    const [highScore, setHighScore] = useState(
+        parseInt(localStorage.getItem('2048HighScore') || '0')
+    );
 
     const handleStart = () => {
         restart();
         setIsStarted(true);
     };
 
+    if (score > highScore) {
+        setHighScore(score);
+        localStorage.setItem('2048HighScore', score.toString());
+    }
+
     return (
         <div className="game-2024-page">
             <header className="game-2024-header">
-                <div>
-                    <p className="eyebrow">Merge challenge</p>
-                    <h1>Classic 2048</h1>
+                <div className="header-left">
+                    <Link to="/" className="back-link">← Arcade Deck</Link>
                 </div>
-                <Link className="back-link" to="/">Back to lobby</Link>
+                <h1>2048 Game</h1>
+                <div className="header-right">
+                    <div className="stat-card mini">
+                        <span className="stat-label">High Score</span>
+                        <span className="stat-value">{highScore}</span>
+                    </div>
+                </div>
             </header>
 
             <main className="game-2024-content">

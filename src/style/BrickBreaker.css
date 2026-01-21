@@ -1,92 +1,157 @@
 /* Brick Breaker specific styles */
 .brick-breaker-page {
-    max-width: 1200px;
+    width: 100vw;
+    height: 100vh;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1vh 2vw;
     color: #fff;
     font-family: 'Inter', sans-serif;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .brick-breaker-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: rgba(20, 25, 40, 0.7);
+    margin-bottom: 2vh;
+    padding: 1vh 1.5vw;
+    background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
 }
 
 .brick-breaker-header h1 {
-    font-size: 2.5rem;
+    font-size: min(2rem, 5vh);
     margin: 0;
     background: linear-gradient(to right, #ff4e50, #f9d423);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(255, 78, 80, 0.3);
+}
+
+.header-left,
+.header-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.header-right {
+    justify-content: flex-end;
+}
+
+.back-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    padding: 0.5vh 1vw;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    font-size: min(0.9rem, 2vh);
+}
+
+.stat-card.mini {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5vh 1vw;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+}
+
+.stat-card.mini .stat-label {
+    font-size: 0.6rem;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.stat-card.mini .stat-value {
+    font-size: 1rem;
+    font-weight: 700;
 }
 
 .playfield-wrapper {
     position: relative;
     padding: 10px;
-    background: rgba(0, 0, 0, 0.3);
+    background: transparent;
     border-radius: 20px;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.03);
     display: flex;
     justify-content: center;
 }
 
 .playfield canvas {
-    background: #0d1117;
+    background: transparent;
     display: block;
     border-radius: 8px;
+    max-height: 60vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.app {
+    display: flex;
+    gap: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
 }
 
 .sidebar-left,
 .sidebar-right {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.5vh;
+    width: 200px;
+    flex-shrink: 0;
 }
 
 .stat-card {
     background: rgba(20, 25, 40, 0.7);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 1vh;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .stat-label {
-    font-size: 0.9rem;
+    font-size: min(0.8rem, 1.8vh);
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.5);
 }
 
 .stat-value {
-    font-size: 2.5rem;
+    font-size: min(2rem, 5vh);
     font-weight: 700;
 }
 
 .game-btn {
     background: linear-gradient(135deg, #ff4e50, #f9d423);
     border: none;
-    padding: 1rem;
+    padding: 1vh 1.5vw;
     border-radius: 12px;
     color: white;
     font-weight: bold;
     cursor: pointer;
     width: 100%;
+    font-size: min(1rem, 2vh);
 }
 
 .hidden {
@@ -106,8 +171,8 @@
 }
 
 .overlay p {
-    font-size: 3rem;
+    font-size: min(3rem, 8vh);
     font-weight: 800;
-    margin-bottom: 2rem;
+    margin-bottom: 2vh;
     color: #fff;
 }

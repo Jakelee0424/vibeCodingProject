@@ -10,7 +10,17 @@ export default function Tetris() {
     const engineRef = useRef<TetrisEngine | null>(null);
 
     const [stats, setStats] = useState<TetrisStats>({ score: 0, lines: 0, level: 1 });
+    const [highScore, setHighScore] = useState(
+        parseInt(localStorage.getItem('tetrisHighScore') || '0')
+    );
     const [gameState, setGameState] = useState<GameState | 'ready'>('ready');
+
+    useEffect(() => {
+        if (stats.score > highScore) {
+            setHighScore(stats.score);
+            localStorage.setItem('tetrisHighScore', stats.score.toString());
+        }
+    }, [stats.score, highScore]);
 
     useEffect(() => {
         if (!boardRef.current || !previewRef.current) return;
@@ -50,11 +60,16 @@ export default function Tetris() {
     return (
         <div className="tetris-page">
             <header className="tetris-header">
-                <div>
-                    <p className="eyebrow">Instant Arcade</p>
-                    <h1>Classic Tetris</h1>
+                <div className="header-left">
+                    <Link to="/" className="back-link">← Arcade Deck</Link>
                 </div>
-                <Link className="back-link" to="/">Back to lobby</Link>
+                <h1>Tetris Game</h1>
+                <div className="header-right">
+                    <div className="stat-card mini">
+                        <span className="stat-label">High Score</span>
+                        <span className="stat-value">{highScore}</span>
+                    </div>
+                </div>
             </header>
 
             <main className="app">
