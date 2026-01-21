@@ -40,7 +40,7 @@ export default function Game2048() {
                     <div className="board-grid" id="board-grid">
                         {/* Background grid cells */}
                         {Array.from({ length: 16 }).map((_, i) => (
-                            <div key={i} className="grid-cell" />
+                            <div key={i} className="tile-grid-cell" />
                         ))}
 
                         {/* Animated tiles */}
@@ -63,8 +63,16 @@ export default function Game2048() {
 
                     {(!isStarted || gameOver) && (
                         <div className="overlay" id="game-2024-overlay">
-                            <p>{gameOver ? 'Game Over' : 'Classic 2048'}</p>
-                            <button className="game-btn" onClick={handleStart}>
+                            {gameOver ? (
+                                <p className="status-text">Game Over</p>
+                            ) : (
+                                <div className="start-menu-content">
+                                    <div className="logo-icon">🧶</div>
+                                    <h2>2048</h2>
+                                    <p className="description">Merge tiles to reach the magic 2048 number!</p>
+                                </div>
+                            )}
+                            <button className="game-btn start-btn" onClick={handleStart}>
                                 {gameOver ? 'Play Again' : 'START GAME'}
                             </button>
                         </div>

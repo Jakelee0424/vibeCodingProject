@@ -26,6 +26,7 @@ export default function Snake() {
 
     const gameLoopRef = useRef<number | null>(null);
     const lastDirectionRef = useRef(INITIAL_DIRECTION);
+    const inputQueueRef = useRef<{ x: number, y: number }[]>([]);
 
     const getRandomFood = useCallback((currentSnake: { x: number, y: number }[]) => {
         let newFood: { x: number, y: number };
@@ -64,9 +65,17 @@ export default function Snake() {
 
         setSnake((prevSnake) => {
             const head = prevSnake[0];
+            const nextDir = inputQueueRef.current.length > 0
+                ? inputQueueRef.current.shift()!
+                : direction;
+
+            // Update direction state for UI if needed, though we primarily use nextDir for movement
+            if (nextDir !== direction) setDirection(nextDir);
+            lastDirectionRef.current = nextDir;
+
             const newHead = {
-                x: head.x + direction.x,
-                y: head.y + direction.y,
+                x: head.x + nextDir.x,
+                y: head.y + nextDir.y,
             };
 
             // Check wall collision
@@ -105,8 +114,20 @@ export default function Snake() {
             newSnake.pop();
             return newSnake;
         });
-        lastDirectionRef.current = direction;
-    }, [direction, food, gameOver, getRandomFood, highScore, isPaused, score]);
+    }, [direction, food, gameOver, getRandomFood, highScore, isPaused, score, gameStarted]);
+
+    const handleDirectionChange = useCallback((newDir: { x: number, y: number }) => {
+        const lastInQueue = inputQueueRef.current.length > 0
+            ? inputQueueRef.current[inputQueueRef.current.length - 1]
+            : lastDirectionRef.current;
+
+        // Prevent 180 degree turns
+        if (newDir.x !== -lastInQueue.x || newDir.y !== -lastInQueue.y) {
+            if (inputQueueRef.current.length < 2) { // Limit queue size to avoid "snake ghosting"
+                inputQueueRef.current.push(newDir);
+            }
+        }
+    }, []);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -114,22 +135,22 @@ export default function Snake() {
                 case 'ArrowUp':
                 case 'w':
                 case 'W':
-                    if (lastDirectionRef.current.y !== 1) setDirection({ x: 0, y: -1 });
+                    handleDirectionChange({ x: 0, y: -1 });
                     break;
                 case 'ArrowDown':
                 case 's':
                 case 'S':
-                    if (lastDirectionRef.current.y !== -1) setDirection({ x: 0, y: 1 });
+                    handleDirectionChange({ x: 0, y: 1 });
                     break;
                 case 'ArrowLeft':
                 case 'a':
                 case 'A':
-                    if (lastDirectionRef.current.x !== 1) setDirection({ x: -1, y: 0 });
+                    handleDirectionChange({ x: -1, y: 0 });
                     break;
                 case 'ArrowRight':
                 case 'd':
                 case 'D':
-                    if (lastDirectionRef.current.x !== -1) setDirection({ x: 1, y: 0 });
+                    handleDirectionChange({ x: 1, y: 0 });
                     break;
                 case ' ':
                     setIsPaused((prev) => !prev);
@@ -139,7 +160,7 @@ export default function Snake() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
+    }, [handleDirectionChange]);
 
     useEffect(() => {
         gameLoopRef.current = window.setInterval(moveSnake, speed);

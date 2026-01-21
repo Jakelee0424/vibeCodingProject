@@ -72,7 +72,7 @@ export default function Tetris() {
                 </div>
             </header>
 
-            <main className="app">
+            <main className="tetris-content">
                 <section className="sidebar-left">
                     <div className="stat-card">
                         <span className="stat-label">Score</span>
@@ -95,12 +95,16 @@ export default function Tetris() {
 
                     {gameState !== 'playing' && (
                         <div className="overlay">
-                            <p>
-                                {gameState === 'ready' && 'TETRIS'}
-                                {gameState === 'paused' && 'PAUSED'}
-                                {gameState === 'gameover' && 'GAME OVER'}
-                            </p>
-                            <button className="game-btn" onClick={() => {
+                            {gameState === 'ready' && (
+                                <div className="start-menu-content">
+                                    <div className="logo-icon">🧩</div>
+                                    <h2>TETRIS</h2>
+                                    <p className="description">Classic block puzzle experience with modern vibe.</p>
+                                </div>
+                            )}
+                            {gameState === 'paused' && <p className="status-text">PAUSED</p>}
+                            {gameState === 'gameover' && <p className="status-text">GAME OVER</p>}
+                            <button className="game-btn start-btn" onClick={() => {
                                 if (gameState === 'paused') engineRef.current?.togglePause();
                                 else handleStart();
                             }}>

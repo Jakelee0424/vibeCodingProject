@@ -207,7 +207,7 @@ export class TetrisEngine {
         this.level = 1;
         this.dropInterval = 1000;
         this.dropCounter = 0;
-        this.lastTime = performance.now();
+        this.lastTime = 0;
         this.paused = false;
         this.gameOver = false;
         this.callbacks.onGameStateChange('playing');
@@ -294,6 +294,7 @@ export class TetrisEngine {
         this.nextPiece = this.createPiece();
         this.currentPiece.x = Math.floor(COLS / 2) - Math.ceil(this.currentPiece.matrix[0].length / 2);
         this.currentPiece.y = 0;
+        this.drawPreview();
         if (this.collides(this.board, this.currentPiece)) {
             this.endGame();
         }

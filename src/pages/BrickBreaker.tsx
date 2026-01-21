@@ -342,7 +342,7 @@ export default function BrickBreaker() {
                 </div>
             </header>
 
-            <main className="app">
+            <main className="brick-breaker-content">
                 <section className="sidebar-left">
                     <div className="stat-card">
                         <span className="stat-label">Score</span>
@@ -366,12 +366,16 @@ export default function BrickBreaker() {
 
                     {gameState !== 'playing' && (
                         <div className="overlay">
-                            <p>
-                                {gameState === 'ready' && 'READY?'}
-                                {gameState === 'gameOver' && 'GAME OVER'}
-                                {gameState === 'won' && 'YOU WIN!'}
-                            </p>
-                            <button className="game-btn" onClick={handleStart}>
+                            {gameState === 'ready' && (
+                                <div className="start-menu-content">
+                                    <div className="logo-icon">🎾</div>
+                                    <h2>BRICK BREAKER</h2>
+                                    <p className="description">Break all bricks and catch powerful items!</p>
+                                </div>
+                            )}
+                            {gameState === 'gameOver' && <p className="status-text">GAME OVER</p>}
+                            {gameState === 'won' && <p className="status-text">YOU WIN!</p>}
+                            <button className="game-btn start-btn" onClick={handleStart}>
                                 {gameState === 'ready' ? 'START GAME' : 'PLAY AGAIN'}
                             </button>
                         </div>
