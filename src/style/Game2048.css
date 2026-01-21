@@ -3,31 +3,34 @@
 /* Reuse variables and common styles */
 
 .game-2024-page {
-    max-width: 1000px;
+    width: 100vw;
+    height: 100vh;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1vh 2vw;
     color: #fff;
     font-family: 'Inter', sans-serif;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .game-2024-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: var(--glass-bg);
+    margin-bottom: 2vh;
+    padding: 1vh 1.5vw;
+    background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
 }
 
 .game-2024-header h1 {
-    font-size: 2.5rem;
+    font-size: min(2rem, 5vh);
     margin: 0;
     background: linear-gradient(to right, #ff9966 0%, #ff5e62 100%);
     background-clip: text;
@@ -36,17 +39,64 @@
     text-shadow: 0 0 20px rgba(255, 94, 98, 0.3);
 }
 
+.header-left,
+.header-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.header-right {
+    justify-content: flex-end;
+}
+
+.back-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    padding: 0.5vh 1vw;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    font-size: min(0.9rem, 2vh);
+}
+
+.stat-card.mini {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5vh 1vw;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+}
+
+.stat-card.mini .stat-label {
+    font-size: 0.6rem;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.stat-card.mini .stat-value {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
 .game-2024-content {
     display: flex;
     gap: 2rem;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
 }
 
 /* Board Styling */
 .board-panel {
     flex: 0 0 auto;
     position: relative;
-    padding: 15px;
+    padding: 10px;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 20px;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
@@ -54,9 +104,9 @@
 }
 
 .board-grid {
-    --tile-size: 100px;
-    --grid-gap: 15px;
-    --grid-padding: 15px;
+    --tile-size: min(100px, 15vh);
+    --grid-gap: min(15px, 2vh);
+    --grid-padding: min(15px, 2vh);
     display: grid;
     grid-template-columns: repeat(4, var(--tile-size));
     grid-template-rows: repeat(4, var(--tile-size));
@@ -195,18 +245,23 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    max-width: 320px;
+    gap: 1.5vh;
+    max-width: 280px;
 }
 
 .hud-group {
     display: flex;
-    gap: 1rem;
+    gap: 1vw;
+}
+
+.stat-card strong {
+    font-size: min(2rem, 5vh);
 }
 
 .restart-btn {
     background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
-    margin-top: 1rem;
+    margin-top: 1vh;
+    padding: 1vh 1.5vw;
 }
 
 .restart-btn:hover {

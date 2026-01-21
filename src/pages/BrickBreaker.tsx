@@ -28,7 +28,17 @@ interface Brick {
 export default function BrickBreaker() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [score, setScore] = useState(0);
+    const [highScore, setHighScore] = useState(
+        parseInt(localStorage.getItem('brickBreakerHighScore') || '0')
+    );
     const [gameState, setGameState] = useState<'ready' | 'playing' | 'gameOver' | 'won'>('ready');
+
+    useEffect(() => {
+        if (score > highScore) {
+            setHighScore(score);
+            localStorage.setItem('brickBreakerHighScore', score.toString());
+        }
+    }, [score, highScore]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -320,11 +330,16 @@ export default function BrickBreaker() {
     return (
         <div className="brick-breaker-page">
             <header className="brick-breaker-header">
-                <div>
-                    <p className="eyebrow">Instant Arcade</p>
-                    <h1>Brick Breaker</h1>
+                <div className="header-left">
+                    <Link to="/" className="back-link">← Arcade Deck</Link>
                 </div>
-                <Link className="back-link" to="/">Back to lobby</Link>
+                <h1>Brick Breaker</h1>
+                <div className="header-right">
+                    <div className="stat-card mini">
+                        <span className="stat-label">High Score</span>
+                        <span className="stat-value">{highScore}</span>
+                    </div>
+                </div>
             </header>
 
             <main className="app">

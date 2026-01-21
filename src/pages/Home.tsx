@@ -38,11 +38,11 @@ export default function Home() {
         </article>
         <article className="game-card">
           <div className="card-copy">
-            <p className="tagline">Upcoming</p>
-            <h2>Game 4</h2>
-            <p className="game-description">Description for game 4</p>
+            <p className="tagline">Classic Arcade</p>
+            <h2>Snake</h2>
+            <p className="game-description">Eat food to grow your length, but avoid hitting the walls or your own tail!</p>
           </div>
-          <Link className="cta-button" to="/">Play 4</Link>
+          <Link className="cta-button" to="/snake">Play Snake</Link>
         </article>
         <article className="game-card">
           <div className="card-copy">
