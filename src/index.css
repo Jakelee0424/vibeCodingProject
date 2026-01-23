@@ -122,6 +122,13 @@ body {
   transform: translateY(0);
 }
 
+/* Fix tooltip cutoff for the 4th and 5th columns in the 5-column grid */
+.game-card:nth-child(5n) .game-description,
+.game-card:nth-child(5n-1) .game-description {
+  left: auto;
+  right: 0;
+}
+
 .card-copy p:not(.game-description) {
   margin: 0;
   color: rgba(248, 248, 242, 0.8);
