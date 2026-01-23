@@ -60,6 +60,14 @@ export default function Home() {
           </div>
           <Link className="cta-button" to="/">Play 6</Link>
         </article>
+        <article className="game-card">
+          <div className="card-copy">
+            <p className="tagline">Upcoming</p>
+            <h2>Game 7</h2>
+            <p className="game-description">Description for game 7 (should wrap)</p>
+          </div>
+          <Link className="cta-button" to="/">Play 7</Link>
+        </article>
       </section>
     </main>
   );
