@@ -24,8 +24,12 @@ export default function Snake() {
     const [isPaused, setIsPaused] = useState(false);
     const [gameStarted, setGameStarted] = useState(false);
 
-    const gameLoopRef = useRef<number | null>(null);
     const lastDirectionRef = useRef(INITIAL_DIRECTION);
+    const directionRef = useRef(INITIAL_DIRECTION);
+    const foodRef = useRef({ x: 5, y: 5 });
+    const scoreRef = useRef(0);
+    const speedRef = useRef(INITIAL_SPEED);
+    const snakeRef = useRef(INITIAL_SNAKE);
     const inputQueueRef = useRef<{ x: number, y: number }[]>([]);
 
     const getRandomFood = useCallback((currentSnake: { x: number, y: number }[]) => {
@@ -35,7 +39,6 @@ export default function Snake() {
                 x: Math.floor(Math.random() * GRID_SIZE),
                 y: Math.floor(Math.random() * GRID_SIZE),
             };
-            // eslint-disable-next-line no-loop-func
             const isOnSnake = currentSnake.some(
                 (segment) => segment.x === newFood.x && segment.y === newFood.y
             );
@@ -44,35 +47,55 @@ export default function Snake() {
         return newFood;
     }, []);
 
+    const resetGame = useCallback(() => {
+        const initialFood = getRandomFood(INITIAL_SNAKE);
+        setSnake(INITIAL_SNAKE);
+        snakeRef.current = INITIAL_SNAKE;
+        setDirection(INITIAL_DIRECTION);
+        directionRef.current = INITIAL_DIRECTION;
+        lastDirectionRef.current = INITIAL_DIRECTION;
+        setFood(initialFood);
+        foodRef.current = initialFood;
+        setGameOver(false);
+        setScore(0);
+        scoreRef.current = 0;
+        setSpeed(INITIAL_SPEED);
+        speedRef.current = INITIAL_SPEED;
+        setIsPaused(false);
+        inputQueueRef.current = [];
+    }, [getRandomFood]);
+
     const startGame = () => {
         setGameStarted(true);
         resetGame();
     };
 
-    const resetGame = () => {
-        setSnake(INITIAL_SNAKE);
-        setDirection(INITIAL_DIRECTION);
-        lastDirectionRef.current = INITIAL_DIRECTION;
-        setFood(getRandomFood(INITIAL_SNAKE));
-        setGameOver(false);
-        setScore(0);
-        setSpeed(INITIAL_SPEED);
-        setIsPaused(false);
-    };
+    const handleDirectionChange = useCallback((newDir: { x: number, y: number }) => {
+        const lastInQueue = inputQueueRef.current.length > 0
+            ? inputQueueRef.current[inputQueueRef.current.length - 1]
+            : lastDirectionRef.current;
 
-    const moveSnake = useCallback(() => {
+        // Prevent 180 degree turns
+        if (newDir.x !== -lastInQueue.x || newDir.y !== -lastInQueue.y) {
+            if (inputQueueRef.current.length < 3) {
+                inputQueueRef.current.push(newDir);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
         if (!gameStarted || gameOver || isPaused) return;
 
-        setSnake((prevSnake) => {
-            const head = prevSnake[0];
-            const nextDir = inputQueueRef.current.length > 0
-                ? inputQueueRef.current.shift()!
-                : direction;
-
-            // Update direction state for UI if needed, though we primarily use nextDir for movement
-            if (nextDir !== direction) setDirection(nextDir);
+        const tick = () => {
+            let nextDir = directionRef.current;
+            if (inputQueueRef.current.length > 0) {
+                nextDir = inputQueueRef.current.shift()!;
+                directionRef.current = nextDir;
+                setDirection(nextDir);
+            }
             lastDirectionRef.current = nextDir;
 
+            const head = snakeRef.current[0];
             const newHead = {
                 x: head.x + nextDir.x,
                 y: head.y + nextDir.y,
@@ -86,48 +109,46 @@ export default function Snake() {
                 newHead.y >= GRID_SIZE
             ) {
                 setGameOver(true);
-                return prevSnake;
+                return;
             }
 
             // Check self collision
-            if (prevSnake.some((segment) => segment.x === newHead.x && segment.y === newHead.y)) {
+            if (snakeRef.current.some((segment) => segment.x === newHead.x && segment.y === newHead.y)) {
                 setGameOver(true);
-                return prevSnake;
+                return;
             }
 
-            const newSnake = [newHead, ...prevSnake];
+            const newSnake = [newHead, ...snakeRef.current];
 
-            // Check food collision
-            if (newHead.x === food.x && newHead.y === food.y) {
-                const newScore = score + 10;
+            // Food collision check
+            if (newHead.x === foodRef.current.x && newHead.y === foodRef.current.y) {
+                const newScore = scoreRef.current + 10;
+                scoreRef.current = newScore;
                 setScore(newScore);
+
                 if (newScore > highScore) {
                     setHighScore(newScore);
                     localStorage.setItem('snakeHighScore', newScore.toString());
                 }
-                setFood(getRandomFood(newSnake));
-                // Increase speed
-                setSpeed((prev) => Math.max(prev - 2, 50));
-                return newSnake;
+
+                const newFood = getRandomFood(newSnake);
+                foodRef.current = newFood;
+                setFood(newFood);
+
+                const newSpeed = Math.max(speedRef.current - 2, 50);
+                speedRef.current = newSpeed;
+                setSpeed(newSpeed);
+            } else {
+                newSnake.pop();
             }
 
-            newSnake.pop();
-            return newSnake;
-        });
-    }, [direction, food, gameOver, getRandomFood, highScore, isPaused, score, gameStarted]);
+            snakeRef.current = newSnake;
+            setSnake(newSnake);
+        };
 
-    const handleDirectionChange = useCallback((newDir: { x: number, y: number }) => {
-        const lastInQueue = inputQueueRef.current.length > 0
-            ? inputQueueRef.current[inputQueueRef.current.length - 1]
-            : lastDirectionRef.current;
-
-        // Prevent 180 degree turns
-        if (newDir.x !== -lastInQueue.x || newDir.y !== -lastInQueue.y) {
-            if (inputQueueRef.current.length < 2) { // Limit queue size to avoid "snake ghosting"
-                inputQueueRef.current.push(newDir);
-            }
-        }
-    }, []);
+        const interval = setInterval(tick, speedRef.current);
+        return () => clearInterval(interval);
+    }, [gameStarted, gameOver, isPaused, highScore, getRandomFood]); // Only restart loop if paused/over/started
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -161,13 +182,6 @@ export default function Snake() {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [handleDirectionChange]);
-
-    useEffect(() => {
-        gameLoopRef.current = window.setInterval(moveSnake, speed);
-        return () => {
-            if (gameLoopRef.current) clearInterval(gameLoopRef.current);
-        };
-    }, [moveSnake, speed]);
 
     return (
         <div className="snake-page">

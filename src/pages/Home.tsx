@@ -54,11 +54,11 @@ export default function Home() {
         </article>
         <article className="game-card">
           <div className="card-copy">
-            <p className="tagline">Upcoming</p>
-            <h2>Game 6</h2>
-            <p className="game-description">Description for game 6 (should wrap)</p>
+            <p className="tagline">Space Shooter</p>
+            <h2>Galaxia</h2>
+            <p className="game-description">Classic arcade shooter. Defend the galaxy from waves of invaders!</p>
           </div>
-          <Link className="cta-button" to="/">Play 6</Link>
+          <Link className="cta-button" to="/galaxia">Play Galaxia</Link>
         </article>
         <article className="game-card">
           <div className="card-copy">
