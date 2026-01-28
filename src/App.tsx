@@ -5,6 +5,7 @@ import Game2048 from './pages/Game2048';
 import BrickBreaker from './pages/BrickBreaker';
 import Snake from './pages/Snake';
 import CarGame from './pages/CarGame';
+import Galaxia from './pages/Galaxia';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/brick-breaker" element={<BrickBreaker />} />
         <Route path="/snake" element={<Snake />} />
         <Route path="/car-dodge" element={<CarGame />} />
+        <Route path="/galaxia" element={<Galaxia />} />
       </Routes>
     </BrowserRouter>
   );
