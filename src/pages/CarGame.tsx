@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import '../style/CarGame.css';
+import { saveScore, getHighScore } from '../utils/api';
+import ScoreModal from '../components/ScoreModal';
 
 const GAME_WIDTH = 450;
 const GAME_HEIGHT = 500;
@@ -38,13 +40,44 @@ const CarGame: React.FC = () => {
     const [playerPosition, setPlayerPosition] = useState(GAME_WIDTH / 2 - PLAYER_WIDTH / 2);
     const [obstacles, setObstacles] = useState<Obstacle[]>([]);
     const [score, setScore] = useState(0);
-    const [highScore, setHighScore] = useState(
-        parseInt(localStorage.getItem('carDodgeHighScore') || '0')
-    );
+    const [highScore, setHighScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [scoreToSave, setScoreToSave] = useState(0);
     const [gameStarted, setGameStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [speed, setSpeed] = useState(INITIAL_SPEED);
+
+    useEffect(() => {
+        const fetchHighScore = async () => {
+            const topScore = await getHighScore('Car Dodge');
+            setHighScore(topScore);
+        };
+        fetchHighScore();
+    }, []);
+
+    useEffect(() => {
+        // Reset scoreSavedRef when game is not in a terminal state
+        if (!gameOver) {
+            scoreSavedRef.current = false;
+        }
+
+        // Handle score saving only once when game ends
+        if (gameOver && !scoreSavedRef.current) {
+            const finalScore = Math.floor(score);
+            if (finalScore > highScore && finalScore > 0) {
+                setHighScore(finalScore);
+                setScoreToSave(finalScore);
+                setIsModalOpen(true);
+                scoreSavedRef.current = true;
+            }
+        }
+    }, [gameOver, score, highScore]);
+
+    const handleSaveScore = async (userName: string) => {
+        await saveScore('Car Dodge', scoreToSave, userName);
+        setIsModalOpen(false);
+    };
 
     const gameLoopRef = useRef<number>(0);
     const scoreRef = useRef(0);
@@ -53,6 +86,7 @@ const CarGame: React.FC = () => {
     const obstaclesRef = useRef<Obstacle[]>([]);
     const lastObstacleTimeRef = useRef(0);
     const keysPressedRef = useRef<{ [key: string]: boolean }>({});
+    const scoreSavedRef = useRef(false);
 
     const stateRef = useRef({
         gameStarted,
@@ -84,6 +118,7 @@ const CarGame: React.FC = () => {
         lastObstacleTimeRef.current = 0;
         setIsPaused(false);
         keysPressedRef.current = {};
+        scoreSavedRef.current = false;
     };
 
     useEffect(() => {
@@ -107,7 +142,7 @@ const CarGame: React.FC = () => {
     }, []);
 
     const update = useCallback(() => {
-        const { gameStarted, gameOver, isPaused, highScore } = stateRef.current;
+        const { gameStarted, gameOver, isPaused } = stateRef.current;
 
         if (!gameStarted || gameOver || isPaused) {
             gameLoopRef.current = requestAnimationFrame(update);
@@ -131,10 +166,6 @@ const CarGame: React.FC = () => {
         const currentScore = Math.floor(scoreRef.current);
         setScore(currentScore);
 
-        if (currentScore > highScore) {
-            setHighScore(currentScore);
-            localStorage.setItem('carDodgeHighScore', currentScore.toString());
-        }
 
         // 3. Update Obstacles
         const updatedObstacles = obstaclesRef.current
@@ -372,6 +403,13 @@ const CarGame: React.FC = () => {
                     </button>
                 </aside>
             </div>
+
+            <ScoreModal
+                isOpen={isModalOpen}
+                score={scoreToSave}
+                onSave={handleSaveScore}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 };

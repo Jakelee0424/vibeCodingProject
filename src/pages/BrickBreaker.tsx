@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../style/BrickBreaker.css';
+import { saveScore, getHighScore } from '../utils/api';
+import ScoreModal from '../components/ScoreModal';
 
 interface Ball {
     x: number;
@@ -31,19 +33,46 @@ export default function BrickBreaker() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [score, setScore] = useState(0);
     const [level, setLevel] = useState(1);
-    const [highScore, setHighScore] = useState(
-        parseInt(localStorage.getItem('brickBreakerHighScore') || '0')
-    );
+    const [highScore, setHighScore] = useState(0);
     const [gameState, setGameState] = useState<'ready' | 'playing' | 'gameOver' | 'won'>('ready');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [scoreToSave, setScoreToSave] = useState(0);
     // Using a ref for ball launch state to prevent useEffect re-runs
     const isBallLaunchedRef = useRef(false);
+    const scoreSavedRef = useRef(false);
 
     useEffect(() => {
-        if (score > highScore) {
-            setHighScore(score);
-            localStorage.setItem('brickBreakerHighScore', score.toString());
+        const fetchHighScore = async () => {
+            const topScore = await getHighScore('Brick Breaker');
+            setHighScore(topScore);
+        };
+        fetchHighScore();
+    }, []);
+
+    useEffect(() => {
+        // Reset scoreSavedRef when game is not in a terminal state
+        if (gameState === 'playing' || gameState === 'ready') {
+            scoreSavedRef.current = false;
         }
-    }, [score, highScore]);
+
+        // Handle score saving only once when game ends (gameOver or won)
+        if ((gameState === 'gameOver' || gameState === 'won') && !scoreSavedRef.current) {
+            if (score > highScore && score > 0) {
+                setHighScore(score);
+                setScoreToSave(score);
+                setIsModalOpen(true);
+                scoreSavedRef.current = true;
+            }
+        }
+    }, [gameState, score, highScore]);
+
+    const handleSaveScore = async (userName: string) => {
+        await saveScore('Brick Breaker', scoreToSave, userName);
+        setIsModalOpen(false);
+    };
+
+    // Removed the old checkAndSaveHighScore function and its useEffect call
+    // as the new useEffect above handles the high score saving logic.
 
     useEffect(() => {
         if (!canvasRef.current || gameState !== 'playing') return;
@@ -370,12 +399,14 @@ export default function BrickBreaker() {
             // 다음 레벨 시작
             setGameState('playing');
             isBallLaunchedRef.current = false;
+            scoreSavedRef.current = false; // Reset scoreSavedRef
         } else {
             // 재시작
             setScore(0);
             setLevel(1);
             setGameState('playing');
             isBallLaunchedRef.current = false;
+            scoreSavedRef.current = false; // Reset scoreSavedRef
         }
     };
 
@@ -456,9 +487,16 @@ export default function BrickBreaker() {
                         setLevel(1);
                         setGameState('playing');
                         isBallLaunchedRef.current = false;
+                        scoreSavedRef.current = false; // Reset scoreSavedRef
                     }}>RESTART GAME</button>
                 </section>
             </main>
+            <ScoreModal
+                isOpen={isModalOpen}
+                score={scoreToSave}
+                onSave={handleSaveScore}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 }

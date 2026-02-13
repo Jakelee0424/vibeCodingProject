@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../style/Galaxia.css';
+import { saveScore, getHighScore } from '../utils/api';
+import ScoreModal from '../components/ScoreModal';
 
 interface GameObject {
     x: number;
@@ -45,17 +47,42 @@ export default function Galaxia() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [score, setScore] = useState(0);
     const [level, setLevel] = useState(1);
-    const [highScore, setHighScore] = useState(
-        parseInt(localStorage.getItem('galaxiaHighScore') || '0')
-    );
-    const [gameState, setGameState] = useState<'ready' | 'playing' | 'gameOver' | 'won'>('ready');
+    const [highScore, setHighScore] = useState(0);
 
     useEffect(() => {
-        if (score > highScore) {
-            setHighScore(score);
-            localStorage.setItem('galaxiaHighScore', score.toString());
+        const fetchHighScore = async () => {
+            const topScore = await getHighScore('Galaxia');
+            setHighScore(topScore);
+        };
+        fetchHighScore();
+    }, []);
+    const [gameState, setGameState] = useState<'ready' | 'playing' | 'gameOver' | 'won'>('ready');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [scoreToSave, setScoreToSave] = useState(0);
+    const scoreSavedRef = useRef(false);
+
+    useEffect(() => {
+        // Reset scoreSavedRef when game is not in a terminal state
+        if (gameState === 'playing' || gameState === 'ready') {
+            scoreSavedRef.current = false;
         }
-    }, [score, highScore]);
+
+        // Handle score saving only once when game ends (gameOver or won)
+        const isTerminal = gameState === 'gameOver' || gameState === 'won';
+        if (isTerminal && !scoreSavedRef.current) {
+            if (score > highScore && score > 0) {
+                setHighScore(score);
+                setScoreToSave(score);
+                setIsModalOpen(true);
+                scoreSavedRef.current = true;
+            }
+        }
+    }, [gameState, score, highScore]);
+
+    const handleSaveScore = async (userName: string) => {
+        await saveScore('Galaxia', scoreToSave, userName);
+        setIsModalOpen(false);
+    };
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -433,6 +460,13 @@ export default function Galaxia() {
                     <button className="game-btn" onClick={() => setGameState('ready')}>ABORT MISSION</button>
                 </section>
             </main>
+
+            <ScoreModal
+                isOpen={isModalOpen}
+                score={scoreToSave}
+                onSave={handleSaveScore}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 }

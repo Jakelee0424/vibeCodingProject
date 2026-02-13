@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import '../style/snake.css';
+import { saveScore, getHighScore } from '../utils/api';
+import ScoreModal from '../components/ScoreModal';
 
 const GRID_SIZE = 20;
 const INITIAL_SNAKE = [
@@ -13,16 +15,45 @@ const INITIAL_SPEED = 150;
 
 export default function Snake() {
     const [snake, setSnake] = useState(INITIAL_SNAKE);
-    const [direction, setDirection] = useState(INITIAL_DIRECTION);
     const [food, setFood] = useState({ x: 5, y: 5 });
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
-    const [highScore, setHighScore] = useState(
-        parseInt(localStorage.getItem('snakeHighScore') || '0')
-    );
-    const [speed, setSpeed] = useState(INITIAL_SPEED);
+    const [highScore, setHighScore] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
     const [gameStarted, setGameStarted] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [scoreToSave, setScoreToSave] = useState(0);
+    const scoreSavedRef = useRef(false);
+
+    const handleSaveScore = async (userName: string) => {
+        await saveScore('Snake', scoreToSave, userName);
+        setIsModalOpen(false);
+    };
+
+    useEffect(() => {
+        const fetchHighScore = async () => {
+            const topScore = await getHighScore('Snake');
+            setHighScore(topScore);
+        };
+        fetchHighScore();
+    }, []);
+
+    useEffect(() => {
+        // Reset scoreSavedRef when game is not in a terminal state
+        if (!gameOver) {
+            scoreSavedRef.current = false;
+        }
+
+        // Handle score saving only once when game ends
+        if (gameOver && !scoreSavedRef.current) {
+            if (score > highScore && score > 0) {
+                setHighScore(score);
+                setScoreToSave(score);
+                setIsModalOpen(true);
+                scoreSavedRef.current = true;
+            }
+        }
+    }, [gameOver, score, highScore]);
 
     const lastDirectionRef = useRef(INITIAL_DIRECTION);
     const directionRef = useRef(INITIAL_DIRECTION);
@@ -51,15 +82,15 @@ export default function Snake() {
         const initialFood = getRandomFood(INITIAL_SNAKE);
         setSnake(INITIAL_SNAKE);
         snakeRef.current = INITIAL_SNAKE;
-        setDirection(INITIAL_DIRECTION);
         directionRef.current = INITIAL_DIRECTION;
         lastDirectionRef.current = INITIAL_DIRECTION;
         setFood(initialFood);
         foodRef.current = initialFood;
         setGameOver(false);
         setScore(0);
+        scoreSavedRef.current = false;
         scoreRef.current = 0;
-        setSpeed(INITIAL_SPEED);
+        scoreRef.current = 0;
         speedRef.current = INITIAL_SPEED;
         setIsPaused(false);
         inputQueueRef.current = [];
@@ -91,7 +122,6 @@ export default function Snake() {
             if (inputQueueRef.current.length > 0) {
                 nextDir = inputQueueRef.current.shift()!;
                 directionRef.current = nextDir;
-                setDirection(nextDir);
             }
             lastDirectionRef.current = nextDir;
 
@@ -101,6 +131,8 @@ export default function Snake() {
                 y: head.y + nextDir.y,
             };
 
+            let collision = false;
+
             // Check wall collision
             if (
                 newHead.x < 0 ||
@@ -108,12 +140,15 @@ export default function Snake() {
                 newHead.y < 0 ||
                 newHead.y >= GRID_SIZE
             ) {
-                setGameOver(true);
-                return;
+                collision = true;
             }
 
             // Check self collision
             if (snakeRef.current.some((segment) => segment.x === newHead.x && segment.y === newHead.y)) {
+                collision = true;
+            }
+
+            if (collision) {
                 setGameOver(true);
                 return;
             }
@@ -126,10 +161,6 @@ export default function Snake() {
                 scoreRef.current = newScore;
                 setScore(newScore);
 
-                if (newScore > highScore) {
-                    setHighScore(newScore);
-                    localStorage.setItem('snakeHighScore', newScore.toString());
-                }
 
                 const newFood = getRandomFood(newSnake);
                 foodRef.current = newFood;
@@ -137,7 +168,6 @@ export default function Snake() {
 
                 const newSpeed = Math.max(speedRef.current - 2, 50);
                 speedRef.current = newSpeed;
-                setSpeed(newSpeed);
             } else {
                 newSnake.pop();
             }
@@ -145,6 +175,8 @@ export default function Snake() {
             snakeRef.current = newSnake;
             setSnake(newSnake);
         };
+
+        // High score handling moved to collision detection
 
         const interval = setInterval(tick, speedRef.current);
         return () => clearInterval(interval);
@@ -277,6 +309,13 @@ export default function Snake() {
                     </button>
                 </aside>
             </div>
+
+            <ScoreModal
+                isOpen={isModalOpen}
+                score={scoreToSave}
+                onSave={handleSaveScore}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 }

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { TetrisEngine } from '../game/TetrisGame';
 import type { TetrisStats, GameState } from '../game/TetrisGame';
 import '../style/Tetris.css';
+import { saveScore, getHighScore } from '../utils/api';
+import ScoreModal from '../components/ScoreModal';
 
 export default function Tetris() {
     const boardRef = useRef<HTMLCanvasElement>(null);
@@ -10,17 +12,41 @@ export default function Tetris() {
     const engineRef = useRef<TetrisEngine | null>(null);
 
     const [stats, setStats] = useState<TetrisStats>({ score: 0, lines: 0, level: 1 });
-    const [highScore, setHighScore] = useState(
-        parseInt(localStorage.getItem('tetrisHighScore') || '0')
-    );
+    const [highScore, setHighScore] = useState(0);
     const [gameState, setGameState] = useState<GameState | 'ready'>('ready');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [scoreToSave, setScoreToSave] = useState(0);
+    const scoreSavedRef = useRef(false);
 
     useEffect(() => {
-        if (stats.score > highScore) {
-            setHighScore(stats.score);
-            localStorage.setItem('tetrisHighScore', stats.score.toString());
+        const fetchHighScore = async () => {
+            const topScore = await getHighScore('Tetris');
+            setHighScore(topScore);
+        };
+        fetchHighScore();
+    }, []);
+
+    useEffect(() => {
+        // Reset scoreSavedRef when game is not in a terminal state
+        if (gameState !== 'gameover') {
+            scoreSavedRef.current = false;
         }
-    }, [stats.score, highScore]);
+
+        // Handle score saving only once when game ends
+        if (gameState === 'gameover' && !scoreSavedRef.current) {
+            if (stats.score > highScore && stats.score > 0) {
+                setHighScore(stats.score);
+                setScoreToSave(stats.score);
+                setIsModalOpen(true);
+                scoreSavedRef.current = true;
+            }
+        }
+    }, [gameState, stats.score, highScore]);
+
+    const handleSaveScore = async (userName: string) => {
+        await saveScore('Tetris', scoreToSave, userName);
+        setIsModalOpen(false);
+    };
 
     useEffect(() => {
         if (!boardRef.current || !previewRef.current) return;
@@ -134,7 +160,14 @@ export default function Tetris() {
                     <button className="game-btn" onClick={handleStart}>RESTART GAME</button>
                 </section>
             </main>
+            <footer></footer>
+
+            <ScoreModal
+                isOpen={isModalOpen}
+                score={scoreToSave}
+                onSave={handleSaveScore}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 }
-
