@@ -1,24 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useGame2048, TILES, TILE_VALUES } from '../hooks/useGame2048';
 import '../style/Game2048.css';
+import { saveScore, getHighScore } from '../utils/api';
+import ScoreModal from '../components/ScoreModal';
 
 export default function Game2048() {
     const { grid, score, gameOver, restart } = useGame2048();
     const [isStarted, setIsStarted] = useState(false);
-    const [highScore, setHighScore] = useState(
-        parseInt(localStorage.getItem('2048HighScore') || '0')
-    );
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [scoreToSave, setScoreToSave] = useState(0);
+    const scoreSavedRef = useRef(false);
+    const [highScore, setHighScore] = useState(0);
+
+    useEffect(() => {
+        const fetchHighScore = async () => {
+            const topScore = await getHighScore('2048');
+            setHighScore(topScore);
+        };
+        fetchHighScore();
+    }, []);
 
     const handleStart = () => {
         restart();
         setIsStarted(true);
     };
 
-    if (score > highScore) {
-        setHighScore(score);
-        localStorage.setItem('2048HighScore', score.toString());
-    }
+    useEffect(() => {
+        // Reset scoreSavedRef when game is not in a terminal state
+        if (!gameOver) {
+            scoreSavedRef.current = false;
+        }
+
+        // Handle score saving only once when game ends
+        if (gameOver && !scoreSavedRef.current) {
+            if (score > highScore && score > 0) {
+                setHighScore(score);
+                setScoreToSave(score);
+                setIsModalOpen(true);
+                scoreSavedRef.current = true;
+            }
+        }
+    }, [gameOver, score, highScore]);
+
+    const handleSaveScore = async (userName: string) => {
+        await saveScore('2048', scoreToSave, userName);
+        setIsModalOpen(false);
+    };
 
     return (
         <div className="game-2024-page">
@@ -102,6 +130,13 @@ export default function Game2048() {
                     </div>
                 </aside>
             </main>
+
+            <ScoreModal
+                isOpen={isModalOpen}
+                score={scoreToSave}
+                onSave={handleSaveScore}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 }
