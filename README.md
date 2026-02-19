@@ -72,3 +72,24 @@ export default defineConfig([
 ])
 ```
 # vibeCodingProject
+
+## Vercel Deployment
+
+This project is configured for one-click deployment to Vercel.
+
+### Deployment Steps
+
+1.  Connect your GitHub repository to Vercel.
+2.  Set the following **Environment Variables** in the Vercel Dashboard:
+    - `DB_HOST`: Your MariaDB host address
+    - `DB_PORT`: Your MariaDB port
+    - `DB_USER`: Your MariaDB username
+    - `DB_PASSWORD`: Your MariaDB password
+    - `DB_NAME`: Your MariaDB database name
+3.  Vercel will automatically detect the Vite project and deploy it.
+
+### Configuration Files
+
+- `vercel.json`: Handles SPA routing for React.
+- `api/scores.js`: Serverless function for high score management.
+
