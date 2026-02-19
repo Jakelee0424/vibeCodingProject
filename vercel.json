@@ -2,6 +2,10 @@
     "version": 2,
     "rewrites": [
         {
+            "source": "/api/scores/:gameName",
+            "destination": "/api/scores?gameName=:gameName"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/$1"
         },

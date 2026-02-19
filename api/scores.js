@@ -50,7 +50,7 @@ export default async function handler(req, res) {
             // In Vercel, if we use /api/scores.js, the gameName might be a query param or part of the path if configured.
             // Easiest is to check query or the last part of the path.
 
-            const gameName = req.query.gameName || url.split('/').pop();
+            const gameName = decodeURIComponent(req.query.gameName || url.split('/').pop());
             console.log(`[Score API] Fetching high scores for: ${gameName}`);
 
             const conn = await dbPool.getConnection();
